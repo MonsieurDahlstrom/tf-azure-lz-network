@@ -3,9 +3,9 @@ variable "log_analytics_workspace_id" {
   description = "Log Analytics Workspace ID"
 }
 
-variable "nsg_flow_logs_storage_id" {
+variable "flow_logs_storage_id" {
   type        = string
-  description = "Storage Account ID for NSG Flow Logs"
+  description = "Storage Account ID for Virtual Network Flow Logs"
 }
 
 

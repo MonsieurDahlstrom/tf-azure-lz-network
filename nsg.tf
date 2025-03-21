@@ -102,16 +102,15 @@ resource "azurerm_network_security_group" "nsg_dmz" {
 }
 
 
-resource "azurerm_network_watcher_flow_log" "flow_logs" {
-  for_each = { for k, v in azurerm_network_security_group.nsgs : k => v }
-
-  name                      = "flowlog-${each.key}"
-  location                  = var.location
-  resource_group_name       = var.resource_group_name
-  network_watcher_name      = azurerm_network_watcher.this.name
-  network_security_group_id = each.value.id
-  storage_account_id        = var.nsg_flow_logs_storage_id
-  enabled                   = true
+resource "azurerm_network_watcher_flow_log" "vnet_flow_logs" {
+  name                = "flowlog-vnet"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  network_watcher_name = azurerm_network_watcher.this.name
+  
+  target_resource_id  = azurerm_virtual_network.this.id
+  storage_account_id  = var.flow_logs_storage_id
+  enabled             = true
 
   retention_policy {
     enabled = true
