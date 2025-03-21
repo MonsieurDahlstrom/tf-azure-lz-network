@@ -12,6 +12,11 @@ variable "flow_logs_storage_id" {
 variable "vnet_cidr" {
   description = "CIDR block for the VNet (must be /22)"
   type        = string
+  
+  validation {
+    condition     = can(regex("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}/22$", var.vnet_cidr))
+    error_message = "The vnet_cidr value must be a valid IPv4 CIDR block with a /22 prefix length."
+  }
 }
 
 variable "location" {
@@ -45,18 +50,25 @@ variable "github_business_id" {
 
 locals {
   full_subnet_map = {
-    aks_nodepool         = cidrsubnet(var.vnet_cidr, 0, 0)  # /24
-    aks_ingress          = cidrsubnet(var.vnet_cidr, 2, 0)  # /26
-    private_endpoints    = cidrsubnet(var.vnet_cidr, 2, 1)  # /26
-    aks_api              = cidrsubnet(var.vnet_cidr, 4, 4)  # /28
-    dmz                  = cidrsubnet(var.vnet_cidr, 4, 5)  # /28
-    firewall             = cidrsubnet(var.vnet_cidr, 2, 2)  # /26 (reserved)
-    bastion              = cidrsubnet(var.vnet_cidr, 3, 6)  # /27 (reserved)
-    jumpbox              = cidrsubnet(var.vnet_cidr, 4, 6)  # /28 (reserved)
-    management           = cidrsubnet(var.vnet_cidr, 4, 7)  # /28 (reserved)
-    integration          = cidrsubnet(var.vnet_cidr, 2, 3)  # /26 (reserved)
-    dns_resolver         = cidrsubnet(var.vnet_cidr, 4, 8)  # /28 (conditional)
-    github_runners       = cidrsubnet(var.vnet_cidr, 1, 1)  # /25 (conditional)
+    # Primary subnets - occupy larger parts of the address space
+    aks_nodepool      = cidrsubnet(var.vnet_cidr, 2, 0)  # /24 - first quarter
+    github_runners    = cidrsubnet(var.vnet_cidr, 2, 1)  # /24 - second quarter
+    
+    # Medium subnets - occupy portions of the third quarter
+    aks_ingress       = cidrsubnet(var.vnet_cidr, 4, 8)   # /26 - first half of 3rd quarter
+    private_endpoints = cidrsubnet(var.vnet_cidr, 4, 9)   # /26 - second half of 3rd quarter
+    
+    # Small subnets - occupy portions of the fourth quarter
+    aks_api           = cidrsubnet(var.vnet_cidr, 6, 48)  # /28 - 1/16 of 4th quarter
+    dmz               = cidrsubnet(var.vnet_cidr, 6, 49)  # /28 - 1/16 of 4th quarter
+    jumpbox           = cidrsubnet(var.vnet_cidr, 6, 50)  # /28 - 1/16 of 4th quarter
+    management        = cidrsubnet(var.vnet_cidr, 6, 51)  # /28 - 1/16 of 4th quarter
+    dns_resolver      = cidrsubnet(var.vnet_cidr, 6, 52)  # /28 - 1/16 of 4th quarter
+    
+    # Medium reserved subnets - occupy portions of the fourth quarter
+    firewall          = cidrsubnet(var.vnet_cidr, 5, 28)  # /27 - 1/8 of 4th quarter
+    bastion           = cidrsubnet(var.vnet_cidr, 5, 29)  # /27 - 1/8 of 4th quarter
+    integration       = cidrsubnet(var.vnet_cidr, 5, 30)  # /27 - 1/8 of 4th quarter
   }
 
   active_subnet_keys = [

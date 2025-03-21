@@ -50,7 +50,7 @@ resource "azurerm_subnet" "github_runners" {
   delegation {
     name = "github-networksettings-delegation"
     service_delegation {
-      name = "Microsoft.GitHub/networkSettings"
+      name = "GitHub.Network/networkSettings"
       actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
     }
   }
@@ -59,7 +59,7 @@ resource "azurerm_subnet" "github_runners" {
 
 resource "azapi_resource" "github_network_settings" {
   count     = var.enable_github_network_settings ? 1 : 0
-  type      = "Microsoft.GitHub/networkSettings@2024-04-02"
+  type      = "GitHub.Network/networkSettings@2024-04-02"
   name      = "github-network-settings"
   location  = var.location
   parent_id = "/subscriptions/${var.subscription_id}/resourceGroups/${var.resource_group_name}"
@@ -82,7 +82,14 @@ output "github_network_id" {
 }
 
 
+resource "azurerm_subnet" "dmz" {
+  name                 = "dmz-subnet"
+  resource_group_name  = var.resource_group_name
+  virtual_network_name = azurerm_virtual_network.this.name
+  address_prefixes     = [local.full_subnet_map["dmz"]]
+}
+
 resource "azurerm_subnet_network_security_group_association" "dmz_nsg_assoc" {
-  subnet_id                 = azurerm_subnet.subnets["dmz"].id
+  subnet_id                 = azurerm_subnet.dmz.id
   network_security_group_id = azurerm_network_security_group.nsg_dmz.id
 }
