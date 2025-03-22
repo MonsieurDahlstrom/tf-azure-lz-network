@@ -2,6 +2,16 @@
 # Cleanup script for Azure Data Collection resources created by Network Watcher Flow Logs
 # Usage: ./dcr_cleanup.sh <RESOURCE_GROUP> <SUBSCRIPTION_ID> [NAME_PATTERN]
 
+# Define cleanup function
+cleanup() {
+    echo "Cleaning up temporary files..."
+    rm -f all_dcrs.txt all_dces.txt
+    echo "Cleanup complete"
+}
+
+# Set up trap to ensure cleanup runs on script exit
+trap cleanup EXIT
+
 # Get parameters
 MODULE_RG="$1"
 SUBSCRIPTION_ID="$2"
@@ -191,9 +201,4 @@ else
   done
 fi
 
-echo "Data Collection resources cleanup process complete"
-
-# Clean up temporary files
-echo "Cleaning up temporary files..."
-rm -f all_dcrs.txt all_dces.txt
-echo "Cleanup complete" 
+echo "Data Collection resources cleanup process complete" 
