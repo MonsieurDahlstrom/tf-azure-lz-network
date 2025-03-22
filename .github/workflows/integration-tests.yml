@@ -100,15 +100,7 @@ jobs:
       - name: Run integration tests (Windows)
         if: matrix.os == 'windows-latest'
         working-directory: tests
-        run: |
-          go run gotest.tools/gotestsum@latest `
-            --format short-verbose `
-            --junitfile test-results-${{ matrix.os }}.xml `
-            -- -tags=integration `
-            -timeout 30m `
-            -race `
-            -coverprofile=coverage-${{ matrix.os }}.out `
-            -covermode=atomic
+        run: go run gotest.tools/gotestsum@latest --format short-verbose --junitfile test-results-${{ matrix.os }}.xml -- -tags=integration -timeout 30m -race -coverprofile=coverage-${{ matrix.os }}.out -covermode=atomic
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
