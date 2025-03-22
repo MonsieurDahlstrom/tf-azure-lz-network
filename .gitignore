@@ -22,3 +22,7 @@ terraform.tfvars
 # OS specific
 .DS_Store
 Thumbs.db 
+
+# Example output files
+example/all_dces.txt
+example/all_dcrs.txt 
