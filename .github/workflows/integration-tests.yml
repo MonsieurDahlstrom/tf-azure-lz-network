@@ -25,15 +25,21 @@ jobs:
           - os: ubuntu-latest
             go_version: 1.21
             terraform_version: 1.5.7
+            goos: linux
+            goarch: amd64
           - os: windows-latest
             go_version: 1.21
             terraform_version: 1.5.7
+            goos: windows
+            goarch: amd64
     defaults:
       run:
         shell: ${{ matrix.os == 'windows-latest' && 'pwsh' || 'bash' }}
     env:
       GO111MODULE: on
-      CGO_ENABLED: 0
+      CGO_ENABLED: 1
+      GOOS: ${{ matrix.goos }}
+      GOARCH: ${{ matrix.goarch }}
       TF_IN_AUTOMATION: true
       TF_INPUT: false
     steps:
