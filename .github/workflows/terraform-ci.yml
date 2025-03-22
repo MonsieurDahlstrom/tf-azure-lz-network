@@ -4,6 +4,10 @@ on:
   pull_request:
     branches: [ main, next ]
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   terraform:
     uses: ./.github/workflows/terraform-validation.yml
