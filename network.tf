@@ -50,7 +50,7 @@ resource "azurerm_subnet" "github_runners" {
   delegation {
     name = "github-networksettings-delegation"
     service_delegation {
-      name = "GitHub.Network/networkSettings"
+      name    = "GitHub.Network/networkSettings"
       actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
     }
   }

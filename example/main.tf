@@ -2,11 +2,15 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = ">= 4.23.0"
+      version = ">= 4.0.0"
     }
     azapi = {
       source  = "azure/azapi"
-      version = ">= 2.3.0"
+      version = ">= 2.0.0"
+    }
+    null = {
+      source  = "hashicorp/null"
+      version = ">= 3.2.2"
     }
   }
   required_version = ">= 1.0.0"
@@ -79,27 +83,27 @@ resource "azurerm_log_analytics_workspace" "law" {
 }
 
 resource "azurerm_storage_account" "st" {
-  name                     = "st${local.solution}${random_string.name_suffix.result}"
-  location                 = local.location
-  resource_group_name      = azurerm_resource_group.rg.name
-  account_tier              = "Standard"
-  account_kind              = "StorageV2"
-  account_replication_type  = "LRS"
-  https_traffic_only_enabled  = true
-  tags                     = local.common_tags
+  name                       = "st${local.solution}${random_string.name_suffix.result}"
+  location                   = local.location
+  resource_group_name        = azurerm_resource_group.rg.name
+  account_tier               = "Standard"
+  account_kind               = "StorageV2"
+  account_replication_type   = "LRS"
+  https_traffic_only_enabled = true
+  tags                       = local.common_tags
 }
 
 module "landingzone_network" {
-  source                       = "../"
-  resource_group_name          = azurerm_resource_group.rg.name
-  location                     = local.location
-  vnet_cidr                    = var.vnet_cidr
-  enable_dns_resolver          = var.enable_dns_resolver
+  source                         = "../"
+  resource_group_name            = azurerm_resource_group.rg.name
+  location                       = local.location
+  vnet_cidr                      = var.vnet_cidr
+  enable_dns_resolver            = var.enable_dns_resolver
   enable_github_network_settings = var.enable_github_network_settings
-  github_business_id           = var.github_business_id
-  log_analytics_workspace_id   = azurerm_log_analytics_workspace.law.id
-  flow_logs_storage_id         = azurerm_storage_account.st.id
-  subscription_id              = var.subscription_id
+  github_business_id             = var.github_business_id
+  log_analytics_workspace_id     = azurerm_log_analytics_workspace.law.id
+  flow_logs_storage_id           = azurerm_storage_account.st.id
+  subscription_id                = var.subscription_id
 }
 
 output "vnet_id" {
