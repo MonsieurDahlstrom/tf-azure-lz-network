@@ -97,7 +97,27 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           
-      - name: Run integration tests
+      - name: Run integration tests (Windows)
+        if: matrix.os == 'windows-latest'
+        working-directory: tests
+        run: |
+          go run gotest.tools/gotestsum@latest `
+            --format short-verbose `
+            --junitfile test-results-${{ matrix.os }}.xml `
+            -- -tags=integration `
+            -timeout 30m `
+            -race `
+            -coverprofile=coverage-${{ matrix.os }}.out `
+            -covermode=atomic
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_USE_OIDC: true
+          TF_VAR_environment: ${{ github.event_name == 'pull_request' && 'pr' || 'main' }}
+
+      - name: Run integration tests (Linux)
+        if: matrix.os == 'ubuntu-latest'
         working-directory: tests
         run: |
           go run gotest.tools/gotestsum@latest \
