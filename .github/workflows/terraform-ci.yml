@@ -3,116 +3,18 @@ name: Terraform CI
 on:
   pull_request:
     branches: [ main ]
-  push:
-    branches: [ main ]
 
 jobs:
   terraform:
-    name: Terraform Validation and Security
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
-      cancel-in-progress: true
-    defaults:
-      run:
-        shell: bash
-    env:
-      TF_IN_AUTOMATION: true
-      TF_INPUT: false
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Cache Terraform dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.terraform.d/plugin-cache
-            .terraform
-          key: ${{ runner.os }}-terraform-${{ hashFiles('**/*.tf') }}
-          restore-keys: |
-            ${{ runner.os }}-terraform-
-            
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: 1.5.7
-          terraform_wrapper: false
-          
-      - name: Terraform Format
-        run: terraform fmt -check -recursive
-        continue-on-error: true
-        
-      - name: Terraform Init
-        run: |
-          terraform init \
-            -backend=false \
-            -reconfigure \
-            -upgrade
-        env:
-          TF_VAR_environment: ${{ github.event_name == 'pull_request' && 'pr' || 'main' }}
-          
-      - name: Terraform Validate
-        run: |
-          terraform validate \
-            -json \
-            -no-color
-        continue-on-error: true
-        
-      - name: Run tfsec
-        uses: aquasecurity/tfsec-action@v1.0.0
-        continue-on-error: true
-        env:
-          TF_VAR_environment: ${{ github.event_name == 'pull_request' && 'pr' || 'main' }}
+    uses: ./.github/workflows/terraform-validation.yml
+    secrets: inherit
     
   unit-test:
-    name: Unit Tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version: 1.21
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: "1.5.7"
-      - name: Download go modules
-        working-directory: tests
-        run: go mod download
-      - name: Unit tests
-        working-directory: tests
-        run: go run gotest.tools/gotestsum@latest --format short-verbose -- -tags=unit
-        env:
-          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-          ARM_USE_OIDC: true
+    needs: terraform
+    uses: ./.github/workflows/unit-tests.yml
+    secrets: inherit
     
   integration:
-    name: Integration Tests
-    runs-on: ${{ matrix.os }}
-    needs: [unit-test]
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version: 1.21
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: "1.5.7"
-      - name: Download go modules
-        working-directory: tests
-        run: go mod download
-      - name: Integration tests
-        working-directory: tests
-        run: go test -timeout 30m -v -tags=integration
-        env:
-          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-          ARM_USE_OIDC: true
+    needs: unit-test
+    uses: ./.github/workflows/integration-tests.yml
+    secrets: inherit
