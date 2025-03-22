@@ -48,17 +48,32 @@ resource "null_resource" "dcr_cleanup" {
     network_watcher_rg = local.network_watcher_rg_name
     module_rg = var.resource_group_name  # Module's resource group where data collection resources are created
     subscription_id = data.azurerm_client_config.current.subscription_id
-    # Include script path in triggers to recreate if script changes
-    script_path = "${path.module}/dcr_cleanup.sh"
+    # Include script paths in triggers to recreate if scripts change
+    bash_script_path = "${path.module}/dcr_cleanup.sh"
+    ps_script_path = "${path.module}/dcr_cleanup.ps1"
+    # Store OS information for cross-platform support
+    is_windows = substr(pathexpand("~"), 0, 1) == "/" ? false : true
+  }
+
+  # Make sure the bash script is executable on Unix/Linux systems
+  provisioner "local-exec" {
+    command = self.triggers.is_windows ? "echo 'Windows detected, skipping chmod'" : "chmod +x ${path.module}/dcr_cleanup.sh"
+    interpreter = self.triggers.is_windows ? ["PowerShell", "-Command"] : ["bash", "-c"]
   }
 
   # Only run during destroy operations
   provisioner "local-exec" {
     when    = destroy
-    # Execute cleanup script to remove both Data Collection Rules and Data Collection Endpoints
-    # The script handles association removal, lock detection, and detailed error reporting
-    command = "${path.module}/dcr_cleanup.sh ${self.triggers.module_rg} ${self.triggers.subscription_id} NWTA"
-    interpreter = ["bash", "-c"]
+    # Choose appropriate script and interpreter based on OS
+    # For Windows systems, use PowerShell
+    # For Linux/Unix systems, use Bash
+    command = self.triggers.is_windows ? (
+      "PowerShell -ExecutionPolicy Bypass -File ${path.module}/dcr_cleanup.ps1 -ResourceGroup ${self.triggers.module_rg} -SubscriptionId ${self.triggers.subscription_id} -NamePattern NWTA"
+    ) : (
+      "${path.module}/dcr_cleanup.sh ${self.triggers.module_rg} ${self.triggers.subscription_id} NWTA"
+    )
+    # The interpreter has no effect on Windows when using PowerShell
+    interpreter = self.triggers.is_windows ? ["PowerShell", "-Command"] : ["bash", "-c"]
   }
 
   depends_on = [azurerm_network_watcher_flow_log.vnet_flow_logs]
