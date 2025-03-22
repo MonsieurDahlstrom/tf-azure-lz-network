@@ -82,9 +82,10 @@ resource "azurerm_storage_account" "st" {
   name                     = "st${local.solution}${random_string.name_suffix.result}"
   location                 = local.location
   resource_group_name      = azurerm_resource_group.rg.name
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-  min_tls_version          = "TLS1_2"
+  account_tier              = "Standard"
+  account_kind              = "StorageV2"
+  account_replication_type  = "LRS"
+  https_traffic_only_enabled  = true
   tags                     = local.common_tags
 }
 
