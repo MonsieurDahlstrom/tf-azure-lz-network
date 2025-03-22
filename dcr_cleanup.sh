@@ -191,4 +191,9 @@ else
   done
 fi
 
-echo "Data Collection resources cleanup process complete" 
+echo "Data Collection resources cleanup process complete"
+
+# Clean up temporary files
+echo "Cleaning up temporary files..."
+rm -f all_dcrs.txt all_dces.txt
+echo "Cleanup complete" 

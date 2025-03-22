@@ -199,4 +199,9 @@ if ([string]::IsNullOrEmpty($moduleDceIds) -or $dceCount -eq 0) {
     }
 }
 
-Write-Host "Data Collection resources cleanup process complete" -ForegroundColor Green 
+Write-Host "Data Collection resources cleanup process complete" -ForegroundColor Green
+
+# Clean up temporary files
+Write-Host "Cleaning up temporary files..." -ForegroundColor Yellow
+Remove-Item -Path "all_dcrs.txt", "all_dces.txt" -Force -ErrorAction SilentlyContinue
+Write-Host "Cleanup complete" -ForegroundColor Green 

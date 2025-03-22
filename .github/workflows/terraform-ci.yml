@@ -1,8 +1,9 @@
-
 name: Terraform CI
 
 on:
   pull_request:
+    branches: [ main ]
+  push:
     branches: [ main ]
 
 jobs:
@@ -24,6 +25,7 @@ jobs:
         uses: aquasecurity/tfsec-action@v1.0.0
         
   unit-test:
+    name: Unit Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -45,10 +47,14 @@ jobs:
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           ARM_USE_OIDC: true
-  
+    
   integration:
-    runs-on: ubuntu-latest
+    name: Integration Tests
+    runs-on: ${{ matrix.os }}
     needs: [unit-test]
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
