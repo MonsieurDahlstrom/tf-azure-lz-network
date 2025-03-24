@@ -89,9 +89,9 @@ func TestNetworkModuleIntegration(t *testing.T) {
 		terraform.InitAndApply(t, terraformOptions)
 
 		// Validate DNS Resolver
-		dnsSubnetID := terraform.Output(t, terraformOptions, "dns_resolver_subnet_id")
-		assert.NotEmpty(t, dnsSubnetID)
-		assert.Contains(t, dnsSubnetID, "/subnets/dns-resolver")
+		subnetIDs := terraform.OutputMap(t, terraformOptions, "subnet_ids")
+		assert.Contains(t, subnetIDs, "dns-resolver")
+		assert.Contains(t, subnetIDs["dns-resolver"], "/subnets/dns-resolver")
 	})
 
 	t.Run("Creates Network with GitHub Runners", func(t *testing.T) {
@@ -103,9 +103,9 @@ func TestNetworkModuleIntegration(t *testing.T) {
 		terraform.InitAndApply(t, terraformOptions)
 
 		// Validate GitHub Runners Subnet
-		githubSubnetID := terraform.Output(t, terraformOptions, "github_runners_subnet_id")
-		assert.NotEmpty(t, githubSubnetID)
-		assert.Contains(t, githubSubnetID, "/subnets/github-runners")
+		subnetIDs := terraform.OutputMap(t, terraformOptions, "subnet_ids")
+		assert.Contains(t, subnetIDs, "github-runners")
+		assert.Contains(t, subnetIDs["github-runners"], "/subnets/github-runners")
 	})
 
 	t.Run("Creates Complete Network with All Features", func(t *testing.T) {
@@ -119,11 +119,10 @@ func TestNetworkModuleIntegration(t *testing.T) {
 
 		// Validate all components
 		vnetID := terraform.Output(t, terraformOptions, "vnet_id")
-		dnsSubnetID := terraform.Output(t, terraformOptions, "dns_resolver_subnet_id")
-		githubSubnetID := terraform.Output(t, terraformOptions, "github_runners_subnet_id")
+		subnetIDs := terraform.OutputMap(t, terraformOptions, "subnet_ids")
 
 		assert.Contains(t, vnetID, "/virtualNetworks/")
-		assert.NotEmpty(t, dnsSubnetID)
-		assert.NotEmpty(t, githubSubnetID)
+		assert.Contains(t, subnetIDs, "dns-resolver")
+		assert.Contains(t, subnetIDs, "github-runners")
 	})
 }

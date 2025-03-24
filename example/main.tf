@@ -115,13 +115,3 @@ output "subnet_ids" {
   description = "Map of subnet names to IDs"
   value       = module.landingzone_network.subnet_ids
 }
-
-output "dns_resolver_subnet_id" {
-  description = "The ID of the DNS resolver subnet"
-  value       = module.landingzone_network.dns_resolver_subnet_id
-}
-
-output "github_runners_subnet_id" {
-  description = "The ID of the GitHub runners subnet"
-  value       = module.landingzone_network.github_runners_subnet_id
-}
