@@ -91,22 +91,32 @@ variable "cgnat_ip_ranges" {
 variable "dmz_http_source_prefixes" {
   description = "Source address prefixes for HTTP traffic to DMZ (default: CGNAT and Cloudflare IP ranges)"
   type        = list(string)
-  default     = concat(var.cgnat_ip_ranges, var.cloudflare_ip_ranges)
+  default     = null
 }
 
 variable "dmz_https_source_prefixes" {
   description = "Source address prefixes for HTTPS traffic to DMZ (default: CGNAT and Cloudflare IP ranges)"
   type        = list(string)
-  default     = concat(var.cgnat_ip_ranges, var.cloudflare_ip_ranges)
+  default     = null
 }
 
 variable "dmz_aks_api_source_prefixes" {
   description = "Source address prefixes for AKS API traffic to DMZ (default: CGNAT IP ranges)"
   type        = list(string)
-  default     = concat(var.cgnat_ip_ranges)
+  default     = null
 }
 
 locals {
+  # Default source prefixes
+  default_dmz_http_source_prefixes  = concat(var.cgnat_ip_ranges, var.cloudflare_ip_ranges)
+  default_dmz_https_source_prefixes = concat(var.cgnat_ip_ranges, var.cloudflare_ip_ranges)
+  default_dmz_aks_api_source_prefixes = var.cgnat_ip_ranges
+
+  # Use provided values or defaults
+  dmz_http_source_prefixes  = coalesce(var.dmz_http_source_prefixes, local.default_dmz_http_source_prefixes)
+  dmz_https_source_prefixes = coalesce(var.dmz_https_source_prefixes, local.default_dmz_https_source_prefixes)
+  dmz_aks_api_source_prefixes = coalesce(var.dmz_aks_api_source_prefixes, local.default_dmz_aks_api_source_prefixes)
+
   full_subnet_map = {
     # Primary subnets - occupy larger parts of the address space
     aks_nodepool   = cidrsubnet(var.vnet_cidr, 2, 0) # /24 - first quarter
