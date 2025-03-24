@@ -9,7 +9,7 @@ import (
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/monsieurdahlstrom/tf-azure-lz-network/tests/testutil"
+	"../tests/testutil"
 )
 
 // An example of how to test the simple Terraform module in examples/terraform-basic-example using Terratest.
