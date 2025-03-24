@@ -1,20 +1,25 @@
-
 output "vnet_id" {
-  description = "The ID of the virtual network"
-  value       = azurerm_virtual_network.this.id
+  description = "ID of the created Virtual Network"
+  value       = azurerm_virtual_network.vnet.id
+}
+
+output "subnets" {
+  description = "Map of subnet names to subnet objects"
+  value = {
+    for k, v in azurerm_subnet.subnets : k => v
+  }
 }
 
 output "subnet_ids" {
-  description = "Map of subnet names to their resource IDs"
-  value       = { for k, subnet in azurerm_subnet.subnets : k => subnet.id }
+  description = "Map of subnet names to subnet IDs"
+  value = {
+    for k, v in azurerm_subnet.subnets : k => v.id
+  }
 }
 
-output "dns_resolver_subnet_id" {
-  description = "ID of the DNS resolver subnet (if created)"
-  value       = try(azurerm_subnet.dns_resolver[0].id, null)
-}
-
-output "github_runners_subnet_id" {
-  description = "ID of the GitHub runners subnet (if created)"
-  value       = try(azurerm_subnet.github_runners[0].id, null)
+output "nsgs" {
+  description = "Map of NSG names to NSG objects"
+  value = {
+    for k, v in azurerm_network_security_group.nsgs : k => v
+  }
 }

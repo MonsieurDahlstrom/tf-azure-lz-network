@@ -65,6 +65,13 @@ jobs:
         
       - name: Run tfsec
         uses: aquasecurity/tfsec-action@v1.0.0
-        continue-on-error: true
         env:
-          TF_VAR_environment: ${{ github.event_name == 'pull_request' && 'pr' || 'main' }} 
+          TF_VAR_environment: ${{ github.event_name == 'pull_request' && 'pr' || 'main' }}
+          TFSEC_FORMAT: sarif
+          TFSEC_OUTPUT: results.sarif
+          
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: results.sarif 
