@@ -48,6 +48,64 @@ variable "github_business_id" {
   type        = string
 }
 
+variable "cloudflare_ip_ranges" {
+  description = "Cloudflare's public IP ranges"
+  type        = list(string)
+  default     = [
+    "173.245.48.0/20",
+    "103.21.244.0/22",
+    "103.22.200.0/22",
+    "103.31.4.0/22",
+    "141.101.64.0/18",
+    "108.162.192.0/18",
+    "190.93.240.0/20",
+    "188.114.96.0/20",
+    "197.234.240.0/22",
+    "198.41.128.0/17",
+    "162.158.0.0/15",
+    "104.16.0.0/13",
+    "104.17.0.0/13",
+    "104.18.0.0/14",
+    "104.19.0.0/16",
+    "104.20.0.0/14",
+    "104.21.0.0/16",
+    "104.22.0.0/15",
+    "104.23.0.0/16",
+    "104.24.0.0/14",
+    "104.25.0.0/16",
+    "104.26.0.0/15",
+    "104.27.0.0/16",
+    "104.28.0.0/14",
+    "104.29.0.0/16",
+    "104.30.0.0/15",
+    "104.31.0.0/16"
+  ]
+}
+
+variable "cgnat_ip_ranges" {
+  description = "CGNAT IP ranges"
+  type        = list(string)
+  default     = ["100.64.0.0/10"]
+}
+
+variable "dmz_http_source_prefixes" {
+  description = "Source address prefixes for HTTP traffic to DMZ (default: CGNAT and Cloudflare IP ranges)"
+  type        = list(string)
+  default     = concat(var.cgnat_ip_ranges, var.cloudflare_ip_ranges)
+}
+
+variable "dmz_https_source_prefixes" {
+  description = "Source address prefixes for HTTPS traffic to DMZ (default: CGNAT and Cloudflare IP ranges)"
+  type        = list(string)
+  default     = concat(var.cgnat_ip_ranges, var.cloudflare_ip_ranges)
+}
+
+variable "dmz_aks_api_source_prefixes" {
+  description = "Source address prefixes for AKS API traffic to DMZ (default: CGNAT IP ranges)"
+  type        = list(string)
+  default     = concat(var.cgnat_ip_ranges)
+}
+
 locals {
   full_subnet_map = {
     # Primary subnets - occupy larger parts of the address space

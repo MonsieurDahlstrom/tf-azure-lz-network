@@ -69,6 +69,8 @@ jobs:
           TF_VAR_environment: ${{ github.event_name == 'pull_request' && 'pr' || 'main' }}
           TFSEC_FORMAT: sarif
           TFSEC_OUTPUT: results.sarif
+        with:
+          sarif_output: results.sarif
           
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v3

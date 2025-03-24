@@ -59,40 +59,49 @@ resource "azurerm_network_security_group" "nsg_dmz" {
   location            = var.location
   resource_group_name = var.resource_group_name
 
-  security_rule {
-    name                       = "Allow-DMZ-To-Ingress-HTTP"
-    priority                   = 100
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    source_address_prefix      = "*"
-    destination_address_prefix = local.full_subnet_map["aks_ingress"]
-    destination_port_range     = "80"
+  dynamic "security_rule" {
+    for_each = var.dmz_http_source_prefixes
+    content {
+      name                       = "Allow-DMZ-To-Ingress-HTTP-${index(var.dmz_http_source_prefixes, security_rule.value)}"
+      priority                   = 100 + index(var.dmz_http_source_prefixes, security_rule.value)
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      source_address_prefix      = security_rule.value
+      destination_address_prefix = local.full_subnet_map["aks_ingress"]
+      destination_port_range     = "80"
+    }
   }
 
-  security_rule {
-    name                       = "Allow-DMZ-To-Ingress-HTTPS"
-    priority                   = 110
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    source_address_prefix      = "*"
-    destination_address_prefix = local.full_subnet_map["aks_ingress"]
-    destination_port_range     = "443"
+  dynamic "security_rule" {
+    for_each = var.dmz_https_source_prefixes
+    content {
+      name                       = "Allow-DMZ-To-Ingress-HTTPS-${index(var.dmz_https_source_prefixes, security_rule.value)}"
+      priority                   = 200 + index(var.dmz_https_source_prefixes, security_rule.value)
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      source_address_prefix      = security_rule.value
+      destination_address_prefix = local.full_subnet_map["aks_ingress"]
+      destination_port_range     = "443"
+    }
   }
 
-  security_rule {
-    name                       = "Allow-DMZ-To-AKSAPI"
-    priority                   = 120
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    source_address_prefix      = "*"
-    destination_address_prefix = local.full_subnet_map["aks_api"]
-    destination_port_range     = "443"
+  dynamic "security_rule" {
+    for_each = var.dmz_aks_api_source_prefixes
+    content {
+      name                       = "Allow-DMZ-To-AKSAPI-${index(var.dmz_aks_api_source_prefixes, security_rule.value)}"
+      priority                   = 300 + index(var.dmz_aks_api_source_prefixes, security_rule.value)
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      source_address_prefix      = security_rule.value
+      destination_address_prefix = local.full_subnet_map["aks_api"]
+      destination_port_range     = "443"
+    }
   }
 
   security_rule {
