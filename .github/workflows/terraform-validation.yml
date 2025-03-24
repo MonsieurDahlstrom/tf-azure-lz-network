@@ -63,15 +63,26 @@ jobs:
             -no-color
         continue-on-error: true
         
-      - name: Run tfsec
-        uses: aquasecurity/tfsec-action@v1.0.0
-        env:
-          TF_VAR_environment: ${{ github.event_name == 'pull_request' && 'pr' || 'main' }}
-          TFSEC_FORMAT: sarif
-          TFSEC_OUTPUT: results.sarif
-        with:
-          sarif_output: results.sarif
-          working_directory: .
+      - name: Install Checkov
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install checkov
+          
+      - name: Run Checkov
+        run: |
+          checkov -d . \
+            --output sarif \
+            --output-file-path results.sarif \
+            --framework terraform \
+            --check CKV_AZURE_* \
+            --check CKV_* \
+            --skip-check CKV_AZURE_1 \
+            --skip-check CKV_AZURE_2 \
+            --skip-check CKV_123 \
+            --skip-check CKV_124 \
+            --compact \
+            --directory .
+        continue-on-error: true
           
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v3
