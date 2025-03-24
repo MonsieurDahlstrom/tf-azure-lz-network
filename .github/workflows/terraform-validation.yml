@@ -71,9 +71,11 @@ jobs:
           TFSEC_OUTPUT: results.sarif
         with:
           sarif_output: results.sarif
+          working_directory: .
           
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
-          sarif_file: results.sarif 
+          sarif_file: results.sarif
+          checkout_path: ${{ github.workspace }} 
