@@ -63,7 +63,7 @@ jobs:
       - name: Run Terraform tests
         run: |
           terraform init
-          terraform test -test-directory=tests
+          terraform test
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
@@ -122,7 +122,7 @@ jobs:
       - name: Run Terraform tests
         run: |
           terraform init
-          terraform test -test-directory=tests
+          terraform test
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
