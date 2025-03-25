@@ -22,7 +22,7 @@ resource "azurerm_network_watcher_flow_log" "vnet_flow_logs" {
 
   retention_policy {
     enabled = true
-    days    = 7
+    days    = 105
   }
 
   traffic_analytics {

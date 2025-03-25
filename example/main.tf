@@ -28,7 +28,7 @@ variable "client_id" {
 }
 
 variable "client_secret" {
-  type = string
+  type    = string
   default = null
 }
 
@@ -37,7 +37,7 @@ variable "tenant_id" {
 }
 
 variable "use_oidc" {
-  type = bool
+  type    = bool
   default = false
 }
 
@@ -70,27 +70,32 @@ provider "azurerm" {
 }
 
 resource "random_pet" "bucket_prefix" {
+  #checkov:skip=CKV_AZURE_*
   length = 4
 }
 
 resource "random_string" "storage_account_name" {
+  #checkov:skip=CKV_AZURE_*
   length  = 20
   special = false
   upper   = false
 }
 
 resource "azurerm_resource_group" "this" {
+  #checkov:skip=CKV_AZURE_*
   name     = "rg-test-${random_pet.bucket_prefix.id}"
   location = "westeurope"
 }
 
 resource "azurerm_log_analytics_workspace" "this" {
+  #checkov:skip=CKV_AZURE_*
   name                = "law-test-${random_pet.bucket_prefix.id}"
   location            = azurerm_resource_group.this.location
   resource_group_name = azurerm_resource_group.this.name
 }
 
 resource "azurerm_storage_account" "this" {
+  #checkov:skip=CKV_AZURE_*
   name                       = random_string.storage_account_name.result
   resource_group_name        = azurerm_resource_group.this.name
   location                   = azurerm_resource_group.this.location

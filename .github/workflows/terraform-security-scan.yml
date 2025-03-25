@@ -1,4 +1,4 @@
-name: Terraform Validation
+name: Terraform Security Scan
 
 on:
   workflow_call:

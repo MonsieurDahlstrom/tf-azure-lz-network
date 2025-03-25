@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   terraform:
-    uses: ./.github/workflows/terraform-validation.yml
+    uses: ./.github/workflows/terraform-security-scan.yml
     secrets: inherit
     
   integration:
