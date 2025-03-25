@@ -95,7 +95,7 @@ resource "azurerm_log_analytics_workspace" "this" {
 }
 
 resource "azurerm_storage_account" "this" {
-  #checkov:skip=CKV_AZURE_*
+  #checkov:skip=CKV_AZURE_*: "This is an example resource for integration testing"
   name                       = random_string.storage_account_name.result
   resource_group_name        = azurerm_resource_group.this.name
   location                   = azurerm_resource_group.this.location
