@@ -22,7 +22,7 @@ resource "azurerm_network_watcher_flow_log" "vnet_flow_logs" {
 
   retention_policy {
     enabled = true
-    days    = 7
+    days    = 105
   }
 
   traffic_analytics {
@@ -46,7 +46,7 @@ resource "null_resource" "dcr_cleanup" {
     flow_log_id = azurerm_network_watcher_flow_log.vnet_flow_logs.id
     # Store information needed for destroy-time provisioner
     network_watcher_rg = local.network_watcher_rg_name
-    module_rg          = var.resource_group_name # Module's resource group where data collection resources are created
+    module_rg          = data.azurerm_resource_group.parent.name # Module's resource group where data collection resources are created
     subscription_id    = data.azurerm_client_config.current.subscription_id
     # Include script paths in triggers to recreate if scripts change
     bash_script_path = "${path.module}/dcr_cleanup.sh"

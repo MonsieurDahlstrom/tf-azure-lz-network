@@ -1,3 +1,7 @@
+data "azurerm_resource_group" "parent" {
+  name = var.resource_group_name
+}
+
 variable "log_analytics_workspace_id" {
   type        = string
   description = "Log Analytics Workspace ID"
@@ -27,10 +31,6 @@ variable "resource_group_name" {
   type = string
 }
 
-variable "subscription_id" {
-  type = string
-}
-
 variable "enable_dns_resolver" {
   description = "Enable subnet and NSG for private DNS resolver"
   type        = bool
@@ -44,11 +44,73 @@ variable "enable_github_network_settings" {
 }
 
 variable "github_business_id" {
-  description = "GitHub business ID for runner scale set integration"
+  description = "GitHub business ID for runner scale set integration. Required when enable_github_network_settings is true."
   type        = string
+  default     = null
+}
+
+variable "cloudflare_ip_ranges" {
+  description = "Cloudflare's public IP ranges"
+  type        = list(string)
+  default = [
+    # 104.x.x.x ranges (consolidated)
+    "104.16.0.0/13", # Covers 104.16.0.0 - 104.23.255.255
+    "104.24.0.0/14", # Covers 104.24.0.0 - 104.27.255.255
+    "104.28.0.0/15", # Covers 104.28.0.0 - 104.29.255.255
+    "104.30.0.0/15", # Covers 104.30.0.0 - 104.31.255.255
+
+    # 103.x.x.x ranges (cannot be consolidated)
+    "103.21.244.0/22",
+    "103.22.200.0/22",
+    "103.31.4.0/22",
+
+    # Other ranges (each in different network spaces)
+    "108.162.192.0/18",
+    "141.101.64.0/18",
+    "162.158.0.0/15",
+    "173.245.48.0/20",
+    "188.114.96.0/20",
+    "190.93.240.0/20",
+    "197.234.240.0/22",
+    "198.41.128.0/17"
+  ]
+}
+
+variable "cgnat_ip_ranges" {
+  description = "CGNAT IP ranges"
+  type        = list(string)
+  default     = ["100.64.0.0/10"]
+}
+
+variable "dmz_http_source_prefixes" {
+  description = "Source address prefixes for HTTP traffic to DMZ (default: CGNAT and Cloudflare IP ranges)"
+  type        = list(string)
+  default     = null
+}
+
+variable "dmz_https_source_prefixes" {
+  description = "Source address prefixes for HTTPS traffic to DMZ (default: CGNAT and Cloudflare IP ranges)"
+  type        = list(string)
+  default     = null
+}
+
+variable "dmz_aks_api_source_prefixes" {
+  description = "Source address prefixes for AKS API traffic to DMZ (default: CGNAT IP ranges)"
+  type        = list(string)
+  default     = null
 }
 
 locals {
+  # Default source prefixes
+  default_dmz_http_source_prefixes    = concat(var.cgnat_ip_ranges, var.cloudflare_ip_ranges)
+  default_dmz_https_source_prefixes   = concat(var.cgnat_ip_ranges, var.cloudflare_ip_ranges)
+  default_dmz_aks_api_source_prefixes = var.cgnat_ip_ranges
+
+  # Use provided values or defaults
+  dmz_http_source_prefixes    = coalesce(var.dmz_http_source_prefixes, local.default_dmz_http_source_prefixes)
+  dmz_https_source_prefixes   = coalesce(var.dmz_https_source_prefixes, local.default_dmz_https_source_prefixes)
+  dmz_aks_api_source_prefixes = coalesce(var.dmz_aks_api_source_prefixes, local.default_dmz_aks_api_source_prefixes)
+
   full_subnet_map = {
     # Primary subnets - occupy larger parts of the address space
     aks_nodepool   = cidrsubnet(var.vnet_cidr, 2, 0) # /24 - first quarter
