@@ -1,7 +1,12 @@
-
 repos:
   - repo: https://github.com/terraform-linters/tflint
     rev: v0.50.3
     hooks:
       - id: tflint
         args: ["--init"]
+
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.87.0
+    hooks:
+      - id: terraform_fmt
+        args: ["-recursive"]

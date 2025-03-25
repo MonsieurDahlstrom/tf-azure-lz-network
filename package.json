@@ -1,6 +1,6 @@
 
 {
-  "name": "aks-network-monitoring",
+  "name": "tf-azure-lz-network",
   "version": "0.0.0",
   "private": true,
   "scripts": {

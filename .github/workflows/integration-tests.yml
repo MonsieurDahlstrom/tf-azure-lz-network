@@ -11,29 +11,14 @@ on:
         required: true
 
 jobs:
-  test:
-    name: Integration Tests
-    runs-on: ${{ matrix.os }}
+  test-ubuntu:
+    name: Integration Tests (Ubuntu)
+    runs-on: ubuntu-latest
     timeout-minutes: 45
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}-integration-${{ matrix.os }}
-      cancel-in-progress: true
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-        include:
-          - os: ubuntu-latest
-            go_version: 1.21
-            terraform_version: 1.5.7
-          - os: windows-latest
-            go_version: 1.21
-            terraform_version: 1.5.7
     defaults:
       run:
-        shell: ${{ matrix.os == 'windows-latest' && 'pwsh' || 'bash' }}
+        shell: bash
     env:
-      GO111MODULE: on
-      CGO_ENABLED: 0
       TF_IN_AUTOMATION: true
       TF_INPUT: false
     steps:
@@ -41,30 +26,10 @@ jobs:
         with:
           fetch-depth: 0
           
-      - name: Cache Go modules
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cache/go-build
-            ~/go/pkg/mod
-            ${{ matrix.os == 'windows-latest' && 'C:\\Users\\runner\\AppData\\Local\\go-build' || '' }}
-          key: ${{ matrix.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ matrix.os }}-go-
-            
-      - uses: actions/setup-go@v5
-        with:
-          go-version: ${{ matrix.go_version }}
-          check-latest: true
-          cache: true
-          cache-dependency-path: |
-            **/go.sum
-            **/go.mod
-            
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: ${{ matrix.terraform_version }}
+          terraform_version: 1.6.6
           terraform_wrapper: false
           
       - name: Cache Terraform dependencies
@@ -73,51 +38,94 @@ jobs:
           path: |
             ~/.terraform.d/plugin-cache
             .terraform
-            ${{ matrix.os == 'windows-latest' && 'C:\\Users\\runner\\AppData\\Local\\terraform.d\\plugin-cache' || '' }}
-          key: ${{ matrix.os }}-terraform-${{ hashFiles('**/*.tf') }}
+          key: ${{ runner.os }}-terraform-${{ hashFiles('**/*.tf') }}
           restore-keys: |
-            ${{ matrix.os }}-terraform-
+            ${{ runner.os }}-terraform-
             
-      - name: Download go modules
-        working-directory: tests
-        run: go mod download
-        env:
-          GOPROXY: https://proxy.golang.org,direct
-          
-      - name: Run integration tests
-        working-directory: tests
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Generate Azure credentials file
         run: |
-          go run gotest.tools/gotestsum@latest \
-            --format short-verbose \
-            --junitfile test-results-${{ matrix.os }}.xml \
-            -- -tags=integration \
-            -timeout 30m \
-            -race \
-            -coverprofile=coverage-${{ matrix.os }}.out \
-            -covermode=atomic
+          cat > .auto.tfvars.json << EOF
+          {
+            "subscription_id": "${{ secrets.AZURE_SUBSCRIPTION_ID }}",
+            "tenant_id": "${{ secrets.AZURE_TENANT_ID }}",
+            "client_id": "${{ secrets.AZURE_CLIENT_ID }}",
+            "use_oidc": true
+          }
+          EOF
+          
+      - name: Run Terraform tests
+        run: |
+          terraform init
+          terraform test
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           ARM_USE_OIDC: true
           TF_VAR_environment: ${{ github.event_name == 'pull_request' && 'pr' || 'main' }}
-          
-      - name: Upload test results
-        uses: actions/upload-artifact@v4
-        if: always()
+
+  test-windows:
+    name: Integration Tests (Windows)
+    needs: test-ubuntu
+    runs-on: windows-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      TF_IN_AUTOMATION: true
+      TF_INPUT: false
+    steps:
+      - uses: actions/checkout@v4
         with:
-          name: integration-test-results-${{ matrix.os }}
+          fetch-depth: 0
+          
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.6
+          terraform_wrapper: false
+          
+      - name: Cache Terraform dependencies
+        uses: actions/cache@v4
+        with:
           path: |
-            tests/test-results-${{ matrix.os }}.xml
-            tests/coverage-${{ matrix.os }}.out
-          retention-days: 7
-          
-      - name: Report test coverage
-        if: always()
-        uses: codecov/codecov-action@v4
+            C:\Users\runner\AppData\Local\terraform.d\plugin-cache
+            .terraform
+          key: ${{ runner.os }}-terraform-${{ hashFiles('**/*.tf') }}
+          restore-keys: |
+            ${{ runner.os }}-terraform-
+            
+      - name: Azure Login
+        uses: azure/login@v1
         with:
-          file: tests/coverage-${{ matrix.os }}.out
-          fail_ci_if_error: false
-          name: codecov-${{ matrix.os }}
-          flags: integration
-          verbose: true 
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Generate Azure credentials file
+        run: |
+          @{
+            subscription_id = "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+            tenant_id = "${{ secrets.AZURE_TENANT_ID }}"
+            client_id = "${{ secrets.AZURE_CLIENT_ID }}"
+            use_oidc = $true
+          } | ConvertTo-Json | Set-Content .auto.tfvars.json
+          
+      - name: Run Terraform tests
+        run: |
+          terraform init
+          terraform test
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_USE_OIDC: true
+          TF_VAR_environment: ${{ github.event_name == 'pull_request' && 'pr' || 'main' }} 
