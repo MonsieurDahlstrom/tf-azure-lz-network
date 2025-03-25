@@ -29,6 +29,7 @@ variable "client_id" {
 
 variable "client_secret" {
   type = string
+  default = null
 }
 
 variable "tenant_id" {
@@ -37,6 +38,7 @@ variable "tenant_id" {
 
 variable "use_oidc" {
   type = bool
+  default = false
 }
 
 variable "enable_dns_resolver" {
@@ -62,7 +64,7 @@ provider "azurerm" {
   }
   subscription_id = var.subscription_id
   client_id       = var.client_id
-  client_secret   = var.client_secret
+  client_secret   = var.use_oidc ? null : var.client_secret
   tenant_id       = var.tenant_id
   use_oidc        = var.use_oidc
 }
