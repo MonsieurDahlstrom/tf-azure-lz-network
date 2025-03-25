@@ -4,7 +4,7 @@
 ![Release](https://img.shields.io/github/v/release/monsieurdahlstrom/tf-azure-lz-network)
 ![License](https://img.shields.io/github/license/monsieurdahlstrom/tf-azure-lz-network)
 ![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)
-![tfsec](https://img.shields.io/badge/security-scanned--by--tfsec-blueviolet?logo=github)
+![checkov](https://img.shields.io/badge/security-scanned--by--checkov-blueviolet?logo=github)
 
 ## Introduction
 
