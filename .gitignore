@@ -1,11 +1,12 @@
 # Terraform files
-*.tfstate
-*.tfstate.backup
-*.tfstate.lock.info
-.terraform/
-.terraform.lock.hcl
-terraform.tfvars
-*.auto.tfvars
+**/*.tfstate
+**/*.tfstate.backup
+**/*.tfstate.lock.info
+**/.terraform/
+**/.terraform.lock.hcl
+**/terraform.tfvars
+**/*.auto.tfvars
+**/*.auto.tfvars.json
 
 # Azure credentials
 **/azure-credentials.sh

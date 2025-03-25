@@ -8,7 +8,7 @@
 
 ## Introduction
 
-This module provides a private networking solution for Azure Kubernetes Service (AKS) landing zones. It creates and manages the essential network infrastructure components required for a secure and well-organized AKS environment. The module handles the creation of Virtual Networks, subnets, Network Security Groups (NSGs), and integrates with GitHub Actions runners, providing a robust foundation for your AKS deployment.
+This module provides a private networking solution for Azure Kubernetes Service (AKS) landing zones, ready to be used in conjunction with cloudflare. It creates and manages the essential network infrastructure components required for a secure and well-organized AKS environment. The module handles the creation of Virtual Networks, subnets, Network Security Groups (NSGs), and integrates with GitHub Actions runners, providing a robust foundation for your AKS deployment.
 
 ## Example use
 
@@ -69,7 +69,7 @@ The module defines the following subnets with carefully planned CIDR ranges:
 
 #### Primary Subnets (/24)
 - `aks_nodepool`: Main subnet for AKS node pools
-- `github_runners`: For GitHub Actions runners
+- `github_runners`: For GitHub Actions runners (Note: GitHub Network Settings integration requires GitHub Enterprise)
 
 #### Medium Subnets (/26)
 - `aks_ingress`: Dedicated subnet for ingress controllers

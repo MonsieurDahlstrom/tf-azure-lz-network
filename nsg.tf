@@ -3,7 +3,7 @@ resource "azurerm_network_security_group" "nsgs" {
 
   name                = "nsg-${each.key}"
   location            = var.location
-  resource_group_name = var.resource_group_name
+  resource_group_name = data.azurerm_resource_group.parent.name
 
   security_rule {
     name                       = "Allow-VNet-Inbound"
@@ -35,7 +35,7 @@ resource "azurerm_network_security_group" "dns_resolver_nsg" {
   count               = var.enable_dns_resolver ? 1 : 0
   name                = "nsg-dns-resolver"
   location            = var.location
-  resource_group_name = var.resource_group_name
+  resource_group_name = data.azurerm_resource_group.parent.name
 
   dynamic "security_rule" {
     for_each = { for k, v in local.active_subnets : k => v if k != "dmz" }
@@ -57,13 +57,13 @@ resource "azurerm_network_security_group" "dns_resolver_nsg" {
 resource "azurerm_network_security_group" "nsg_dmz" {
   name                = "nsg-dmz"
   location            = var.location
-  resource_group_name = var.resource_group_name
+  resource_group_name = data.azurerm_resource_group.parent.name
 
   dynamic "security_rule" {
-    for_each = var.dmz_http_source_prefixes
+    for_each = local.dmz_http_source_prefixes
     content {
-      name                       = "Allow-DMZ-To-Ingress-HTTP-${index(var.dmz_http_source_prefixes, security_rule.value)}"
-      priority                   = 100 + index(var.dmz_http_source_prefixes, security_rule.value)
+      name                       = "Allow-DMZ-To-Ingress-HTTP-${index(local.dmz_http_source_prefixes, security_rule.value)}"
+      priority                   = 100 + index(local.dmz_http_source_prefixes, security_rule.value)
       direction                  = "Inbound"
       access                     = "Allow"
       protocol                   = "Tcp"
@@ -75,10 +75,10 @@ resource "azurerm_network_security_group" "nsg_dmz" {
   }
 
   dynamic "security_rule" {
-    for_each = var.dmz_https_source_prefixes
+    for_each = local.dmz_https_source_prefixes
     content {
-      name                       = "Allow-DMZ-To-Ingress-HTTPS-${index(var.dmz_https_source_prefixes, security_rule.value)}"
-      priority                   = 200 + index(var.dmz_https_source_prefixes, security_rule.value)
+      name                       = "Allow-DMZ-To-Ingress-HTTPS-${index(local.dmz_https_source_prefixes, security_rule.value)}"
+      priority                   = 200 + index(local.dmz_https_source_prefixes, security_rule.value)
       direction                  = "Inbound"
       access                     = "Allow"
       protocol                   = "Tcp"
@@ -90,10 +90,10 @@ resource "azurerm_network_security_group" "nsg_dmz" {
   }
 
   dynamic "security_rule" {
-    for_each = var.dmz_aks_api_source_prefixes
+    for_each = local.dmz_aks_api_source_prefixes
     content {
-      name                       = "Allow-DMZ-To-AKSAPI-${index(var.dmz_aks_api_source_prefixes, security_rule.value)}"
-      priority                   = 300 + index(var.dmz_aks_api_source_prefixes, security_rule.value)
+      name                       = "Allow-DMZ-To-AKSAPI-${index(local.dmz_aks_api_source_prefixes, security_rule.value)}"
+      priority                   = 300 + index(local.dmz_aks_api_source_prefixes, security_rule.value)
       direction                  = "Inbound"
       access                     = "Allow"
       protocol                   = "Tcp"
