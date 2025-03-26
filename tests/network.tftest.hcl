@@ -23,6 +23,11 @@ run "default_network" {
     condition     = length(module.network.nsgs) == 5
     error_message = "${jsonencode(keys(module.network.nsgs))} has ${length(module.network.nsgs)} nsgs, expected 5"
   }
+
+  assert {
+    condition     = length(module.network.ingress_ip_map) == 2
+    error_message = "${jsonencode(keys(module.network.ingress_ip_map))} has ${length(module.network.ingress_ip_map)} ips mapped, expected 5"
+  }
 }
 
 run "dns_resolver_network" {

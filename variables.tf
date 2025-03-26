@@ -100,6 +100,17 @@ variable "dmz_aks_api_source_prefixes" {
   default     = null
 }
 
+variable "ingress_ip_names" {
+  description = "List of names that will be converted to a map with IP addresses from the AKS ingress subnet"
+  type        = list(string)
+  default     = ["internal", "external"]
+
+  validation {
+    condition     = length(var.ingress_ip_names) <= 60
+    error_message = "The ingress_ip_names list cannot contain more than 60 names as the subnet only has 60 available IP addresses (64 total - 4 reserved)."
+  }
+}
+
 locals {
   # Default source prefixes
   default_dmz_http_source_prefixes    = concat(var.cgnat_ip_ranges, var.cloudflare_ip_ranges)
@@ -138,4 +149,9 @@ locals {
   ]
 
   active_subnets = { for k, v in local.full_subnet_map : k => v if contains(local.active_subnet_keys, k) }
+
+  # Create a map of ingress IP names to their IP addresses
+  ingress_ip_map = {
+    for name in var.ingress_ip_names : name => cidrhost(local.full_subnet_map["aks_ingress"], index(var.ingress_ip_names, name) + 4)
+  }
 }
