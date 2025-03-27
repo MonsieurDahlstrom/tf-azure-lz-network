@@ -142,3 +142,12 @@ These logs are sent to Azure Monitor Logs for analysis and can be used for:
 - Compliance reporting
 - Troubleshooting network issues
 - Performance optimization
+
+## 📜 License
+
+This module is licensed under the [CC BY-NC 4.0 license](https://creativecommons.org/licenses/by-nc/4.0/).  
+You may use, modify, and share this code **for non-commercial purposes only**.
+
+If you wish to use it in a commercial project (e.g., as part of client infrastructure or a paid product), you must obtain a commercial license.
+
+📬 Contact: [your email or link]
