@@ -63,3 +63,8 @@ output "dns_resolver_ip_address" {
   description = "IP address of the DNS resolver inbound endpoint"
   value       = try(azurerm_private_dns_resolver_inbound_endpoint.dns_resolver_inbound[0].ip_configurations[0].private_ip_address, null)
 }
+
+output "ingress_ip_map" {
+  description = "Map of ingress names to their IP addresses from the AKS ingress subnet"
+  value       = local.ingress_ip_map
+}
