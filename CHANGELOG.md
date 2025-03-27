@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/MonsieurDahlstrom/tf-azure-lz-network/compare/v1.1.0...v1.2.0) (2025-03-27)
+
+
+### Features
+
+* Changed license model ([e205d47](https://github.com/MonsieurDahlstrom/tf-azure-lz-network/commit/e205d479f7fa17cb15a4f49ae9ddc4c15c82fae2))
+
 # [1.2.0-beta.1](https://github.com/MonsieurDahlstrom/tf-azure-lz-network/compare/v1.1.0...v1.2.0-beta.1) (2025-03-27)
 
 
