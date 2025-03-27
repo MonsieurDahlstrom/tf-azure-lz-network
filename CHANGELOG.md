@@ -1,3 +1,17 @@
+# [1.1.0](https://github.com/MonsieurDahlstrom/tf-azure-lz-network/compare/v1.0.0...v1.1.0) (2025-03-27)
+
+
+### Features
+
+* Adding input list of ingress gateway names to reserve ips for ([cf6f1e8](https://github.com/MonsieurDahlstrom/tf-azure-lz-network/commit/cf6f1e8f98a49ebbb55b4a17a29ef740111dc4b9))
+
+# [1.1.0-beta.1](https://github.com/MonsieurDahlstrom/tf-azure-lz-network/compare/v1.0.0...v1.1.0-beta.1) (2025-03-26)
+
+
+### Features
+
+* Adding input list of ingress gateway names to reserve ips for ([cf6f1e8](https://github.com/MonsieurDahlstrom/tf-azure-lz-network/commit/cf6f1e8f98a49ebbb55b4a17a29ef740111dc4b9))
+
 # 1.0.0 (2025-03-25)
 
 
