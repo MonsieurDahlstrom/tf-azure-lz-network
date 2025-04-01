@@ -12,3 +12,9 @@ repos:
           - --args=-no-color
           - --args=-diff
           - --args=-write=false
+      - id: checkov
+        args:
+          - --args=-no-color
+          - --args=-diff
+          - --args=-write=false
+          
