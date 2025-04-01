@@ -1,3 +1,10 @@
+# [1.3.0-beta.1](https://github.com/MonsieurDahlstrom/tf-azure-lz-network/compare/v1.2.0...v1.3.0-beta.1) (2025-04-01)
+
+
+### Features
+
+* adding workflows to keeping a major version tag uptodat with minor and patch versions ([d61a8f7](https://github.com/MonsieurDahlstrom/tf-azure-lz-network/commit/d61a8f723a0f0cfe2f8746f6b78a6a83d6728a81))
+
 # [1.2.0](https://github.com/MonsieurDahlstrom/tf-azure-lz-network/compare/v1.1.0...v1.2.0) (2025-03-27)
 
 

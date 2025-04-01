@@ -1,7 +1,7 @@
 run "default_network" {
   command = apply
   module {
-    source = "./example"
+    source = "./examples"
   }
 
   assert {
@@ -32,7 +32,7 @@ run "default_network" {
 
 run "dns_resolver_network" {
   module {
-    source = "./example"
+    source = "./examples"
   }
 
   variables {
