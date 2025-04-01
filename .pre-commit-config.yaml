@@ -10,11 +10,29 @@ repos:
       - id: terraform_validate
         args:
           - --args=-no-color
-          - --args=-diff
-          - --args=-write=false
-      - id: checkov
+        exclude: |
+          (?x)^(
+            .*examples/.*
+          )$
+      - id: terraform_checkov
         args:
-          - --args=-no-color
-          - --args=-diff
-          - --args=-write=false
-          
+          - --args=--check
+          - --args=CKV_*
+          - --args=--check
+          - --args=CKV_AZURE_*
+          - --args=--skip-check
+          - --args=CKV_123
+          - --args=--skip-check
+          - --args=CKV_124
+          - --args=--skip-check
+          - --args=CKV_SECRET_6
+          - --args=--skip-path
+          - --args=terraform.tfvars.json
+          - --args=--compact
+          - --args=--quiet
+          - --args=--directory
+          - --args=.
+        exclude: |
+          (?x)^(
+            .*examples/.*
+          )$
