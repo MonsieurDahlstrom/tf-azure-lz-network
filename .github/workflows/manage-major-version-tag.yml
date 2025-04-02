@@ -24,7 +24,7 @@ jobs:
       release_tag: ${{steps.parse_version.outputs.release_tag}}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
       - name: Parse version from release tag
         id: parse_version
         run: |
@@ -39,7 +39,7 @@ jobs:
     needs: manage_tags
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
       - name: Create release
         uses: softprops/action-gh-release@v1
         id: create_release

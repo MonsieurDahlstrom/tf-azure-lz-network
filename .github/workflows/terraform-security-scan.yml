@@ -25,10 +25,10 @@ jobs:
       TF_IN_AUTOMATION: true
       TF_INPUT: false
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.2.2
       
       - name: Cache Terraform dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v4.2.2
         with:
           path: |
             ~/.terraform.d/plugin-cache
@@ -38,7 +38,7 @@ jobs:
             ${{ runner.os }}-terraform-
             
       - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v3
+        uses: hashicorp/setup-terraform@v3.1.2
         with:
           terraform_version: 1.6.6
           terraform_wrapper: false
@@ -54,7 +54,7 @@ jobs:
             -reconfigure \
             -upgrade
         env:
-          TF_VAR_environment: ${{ github.event_name == 'pull_request' && 'pr' || 'main' }}
+          TF_VAR_environment: ${{ github.event_name == 'pull_request' && 'pr-' || '' }}${{ github.base_ref }}
           
       - name: Terraform Validate
         run: |
