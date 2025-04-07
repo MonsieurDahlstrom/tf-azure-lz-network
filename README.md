@@ -8,7 +8,7 @@
 
 ## Introduction
 
-This module provides a private networking solution for Azure Kubernetes Service (AKS) landing zones, ready to be used in conjunction with cloudflare. It creates and manages the essential network infrastructure components required for a secure and well-organized AKS environment. The module handles the creation of Virtual Networks, subnets, Network Security Groups (NSGs), and integrates with GitHub Actions runners, providing a robust foundation for your AKS deployment.
+This module provides a private Azure networking solution for an application environment or landing zone, ready to be used in conjunction with cloudflare. It creates and manages the essential network infrastructure components required for a secure and well-organized AKS environment. The module handles the creation of Virtual Networks, subnets, Network Security Groups (NSGs), and integrates with GitHub Actions runners, providing a robust foundation for your AKS deployment.
 
 ## Example use
 
@@ -150,4 +150,4 @@ You may use, modify, and share this code **for non-commercial purposes only**.
 
 If you wish to use it in a commercial project (e.g., as part of client infrastructure or a paid product), you must obtain a commercial license.
 
-📬 Contact: [your email or link]
+📬 Contact: mathias@monsieurdahlstrom.com
