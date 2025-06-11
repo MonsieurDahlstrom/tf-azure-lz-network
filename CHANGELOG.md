@@ -1,3 +1,10 @@
+## [1.3.1-beta.1](https://github.com/MonsieurDahlstrom/tf-azure-lz-network/compare/v1.3.0...v1.3.1-beta.1) (2025-06-11)
+
+
+### Bug Fixes
+
+* updated provider versions ([cc07889](https://github.com/MonsieurDahlstrom/tf-azure-lz-network/commit/cc078890c722d97601840bb5d8ccf7b995ac4ae7))
+
 # [1.3.0](https://github.com/MonsieurDahlstrom/tf-azure-lz-network/compare/v1.2.0...v1.3.0) (2025-04-01)
 
 
