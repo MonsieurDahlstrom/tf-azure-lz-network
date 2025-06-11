@@ -16,7 +16,7 @@ resource "azurerm_subnet" "github_runners" {
 
 resource "azapi_resource" "github_network_settings" {
   count     = var.enable_github_network_settings ? 1 : 0
-  type      = "GitHub.Network/networkSettings@2023-11-08-preview"
+  type      = "GitHub.Network/networkSettings@2024-04-02"
   name      = "github-network-settings"
   parent_id = data.azurerm_resource_group.parent.id
   body = {
