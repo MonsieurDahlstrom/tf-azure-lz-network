@@ -1,3 +1,10 @@
+## [1.3.2-beta.1](https://github.com/MonsieurDahlstrom/tf-azure-lz-network/compare/v1.3.1...v1.3.2-beta.1) (2025-06-12)
+
+
+### Bug Fixes
+
+* delegations were not set for aks api server subnet and dns resolver subnet ([3fa561d](https://github.com/MonsieurDahlstrom/tf-azure-lz-network/commit/3fa561d1a3f61418e4d16a48d98ad7a61cebaafe))
+
 ## [1.3.1](https://github.com/MonsieurDahlstrom/tf-azure-lz-network/compare/v1.3.0...v1.3.1) (2025-06-11)
 
 
