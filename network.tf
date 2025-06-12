@@ -13,6 +13,20 @@ resource "azurerm_subnet" "subnets" {
   resource_group_name  = data.azurerm_resource_group.parent.name
   virtual_network_name = azurerm_virtual_network.this.name
   address_prefixes     = [each.value]
+
+  # Add delegation for AKS API server subnet
+  dynamic "delegation" {
+    for_each = each.key == "aks_api" ? [1] : []
+    content {
+      name = "aks-api-delegation"
+      service_delegation {
+        name = "Microsoft.ContainerService/managedClusters"
+        actions = [
+          "Microsoft.Network/virtualNetworks/subnets/action"
+        ]
+      }
+    }
+  }
 }
 
 

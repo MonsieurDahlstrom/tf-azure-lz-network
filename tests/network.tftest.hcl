@@ -28,6 +28,36 @@ run "default_network" {
     condition     = length(module.network.ingress_ip_map) == 2
     error_message = "${jsonencode(keys(module.network.ingress_ip_map))} has ${length(module.network.ingress_ip_map)} ips mapped, expected 5"
   }
+
+  assert {
+    condition     = length(module.network.subnets["aks_api"].delegation) == 1
+    error_message = "aks_api subnet should have exactly one delegation"
+  }
+
+  assert {
+    condition     = module.network.subnets["aks_api"].delegation[0].service_delegation[0].name == "Microsoft.ContainerService/managedClusters"
+    error_message = "aks_api subnet should be delegated to Microsoft.ContainerService/managedClusters"
+  }
+
+  assert {
+    condition     = contains(module.network.subnets["aks_api"].delegation[0].service_delegation[0].actions, "Microsoft.Network/virtualNetworks/subnets/action")
+    error_message = "aks_api subnet delegation should include Microsoft.Network/virtualNetworks/subnets/action"
+  }
+
+  assert {
+    condition     = length(module.network.subnets["aks_nodepool"].delegation) == 0
+    error_message = "aks_nodepool subnet should not have any delegations"
+  }
+
+  assert {
+    condition     = length(module.network.subnets["aks_ingress"].delegation) == 0
+    error_message = "aks_ingress subnet should not have any delegations"
+  }
+
+  assert {
+    condition     = length(module.network.subnets["private_endpoints"].delegation) == 0
+    error_message = "private_endpoints subnet should not have any delegations"
+  }
 }
 
 run "dns_resolver_network" {
@@ -58,16 +88,32 @@ run "dns_resolver_network" {
     condition     = can(cidrnetmask("${module.network.dns_resolver_ip_address}/32"))
     error_message = "DNS resolver should have valid ip, got ${module.network.dns_resolver_ip_address}"
   }
+
+  assert {
+    condition     = length(module.network.subnets["dns_resolver"].delegation) == 1
+    error_message = "dns_resolver subnet should have exactly one delegation"
+  }
+
+  assert {
+    condition     = module.network.subnets["dns_resolver"].delegation[0].service_delegation[0].name == "Microsoft.Network/dnsResolvers"
+    error_message = "dns_resolver subnet should be delegated to Microsoft.Network/dnsResolvers"
+  }
+
+  assert {
+    condition     = contains(module.network.subnets["dns_resolver"].delegation[0].service_delegation[0].actions, "Microsoft.Network/virtualNetworks/subnets/action")
+    error_message = "dns_resolver subnet delegation should include Microsoft.Network/virtualNetworks/subnets/action"
+  }
 }
 
 # Temporarily disabled until we can test with GitHub Enterprise accounts
 # run "github_network_settings" {
 #   module {
-#     source = "./example"
+#     source = "./examples"
 #   }
 #
 #   variables {
-#     enable_github_runner = true
+#     enable_github_network_settings = true
+#     github_business_id = "test-business-id"
 #   }
 #
 #   assert {
@@ -88,5 +134,20 @@ run "dns_resolver_network" {
 #   assert {
 #     condition     = module.network.github_network_id != null
 #     error_message = "GitHub network ID should be created"
+#   }
+#
+#   assert {
+#     condition     = length(module.network.subnets["github_runners"].delegation) == 1
+#     error_message = "github_runners subnet should have exactly one delegation"
+#   }
+#
+#   assert {
+#     condition     = module.network.subnets["github_runners"].delegation[0].service_delegation[0].name == "GitHub.Network/networkSettings"
+#     error_message = "github_runners subnet should be delegated to GitHub.Network/networkSettings"
+#   }
+#
+#   assert {
+#     condition     = contains(module.network.subnets["github_runners"].delegation[0].service_delegation[0].actions, "Microsoft.Network/virtualNetworks/subnets/action")
+#     error_message = "github_runners subnet delegation should include Microsoft.Network/virtualNetworks/subnets/action"
 #   }
 # }
