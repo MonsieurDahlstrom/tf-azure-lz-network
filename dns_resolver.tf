@@ -4,6 +4,16 @@ resource "azurerm_subnet" "dns_resolver" {
   resource_group_name  = data.azurerm_resource_group.parent.name
   virtual_network_name = azurerm_virtual_network.this.name
   address_prefixes     = [local.full_subnet_map["dns_resolver"]]
+
+  delegation {
+    name = "dns-resolver-delegation"
+    service_delegation {
+      name = "Microsoft.Network/dnsResolvers"
+      actions = [
+        "Microsoft.Network/virtualNetworks/subnets/action"
+      ]
+    }
+  }
 }
 
 resource "azurerm_subnet_network_security_group_association" "dns_resolver_assoc" {
