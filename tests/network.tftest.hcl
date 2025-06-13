@@ -40,8 +40,8 @@ run "default_network" {
   }
 
   assert {
-    condition     = contains(module.network.subnets["aks_api"].delegation[0].service_delegation[0].actions, "Microsoft.Network/virtualNetworks/subnets/action")
-    error_message = "aks_api subnet delegation should include Microsoft.Network/virtualNetworks/subnets/action"
+    condition     = contains(module.network.subnets["aks_api"].delegation[0].service_delegation[0].actions, "Microsoft.Network/virtualNetworks/subnets/join/action")
+    error_message = "aks_api subnet delegation should include Microsoft.Network/virtualNetworks/subnets/join/action"
   }
 
   assert {
@@ -100,8 +100,8 @@ run "dns_resolver_network" {
   }
 
   assert {
-    condition     = contains(module.network.subnets["dns_resolver"].delegation[0].service_delegation[0].actions, "Microsoft.Network/virtualNetworks/subnets/action")
-    error_message = "dns_resolver subnet delegation should include Microsoft.Network/virtualNetworks/subnets/action"
+    condition     = contains(module.network.subnets["dns_resolver"].delegation[0].service_delegation[0].actions, "Microsoft.Network/virtualNetworks/subnets/join/action")
+    error_message = "dns_resolver subnet delegation should include Microsoft.Network/virtualNetworks/subnets/join/action"
   }
 }
 
@@ -147,7 +147,7 @@ run "dns_resolver_network" {
 #   }
 #
 #   assert {
-#     condition     = contains(module.network.subnets["github_runners"].delegation[0].service_delegation[0].actions, "Microsoft.Network/virtualNetworks/subnets/action")
-#     error_message = "github_runners subnet delegation should include Microsoft.Network/virtualNetworks/subnets/action"
+#     condition     = contains(module.network.subnets["github_runners"].delegation[0].service_delegation[0].actions, "Microsoft.Network/virtualNetworks/subnets/join/action")
+#     error_message = "github_runners subnet delegation should include Microsoft.Network/virtualNetworks/subnets/join/action"
 #   }
 # }
