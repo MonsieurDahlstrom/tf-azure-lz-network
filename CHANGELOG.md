@@ -1,3 +1,12 @@
+## [1.3.4](https://github.com/MonsieurDahlstrom/tf-azure-lz-network/compare/v1.3.3...v1.3.4) (2025-06-13)
+
+
+### Bug Fixes
+
+* delegations tests for dns resolver and aks api subnet ([556e73b](https://github.com/MonsieurDahlstrom/tf-azure-lz-network/commit/556e73bc218bf4379d3e10b2c4b48ab0cd50e1f1))
+* test case was looking for the wrong delegations for aks_api subnet ([106df7c](https://github.com/MonsieurDahlstrom/tf-azure-lz-network/commit/106df7c21899d16d2a1f8df9d6931cb55fc2c8b9))
+* use intepreter to run the script files provided with the provider ([bf4d9c4](https://github.com/MonsieurDahlstrom/tf-azure-lz-network/commit/bf4d9c4e4a454af43437b40d5917266274c6cd80))
+
 ## [1.3.3](https://github.com/MonsieurDahlstrom/tf-azure-lz-network/compare/v1.3.2...v1.3.3) (2025-06-13)
 
 
