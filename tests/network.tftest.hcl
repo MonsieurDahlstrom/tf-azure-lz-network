@@ -99,9 +99,14 @@ run "dns_resolver_network" {
     error_message = "dns_resolver subnet should be delegated to Microsoft.Network/dnsResolvers"
   }
 
+   assert {
+    condition     = module.network.subnets["aks_api"].delegation[0].service_delegation[0].name == "Microsoft.ContainerService/managedClusters"
+    error_message = "aks_api subnet should be delegated to Microsoft.ContainerService/managedClusters"
+  }
+
   assert {
-    condition     = contains(module.network.subnets["dns_resolver"].delegation[0].service_delegation[0].actions, "Microsoft.Network/virtualNetworks/subnets/join/action")
-    error_message = "dns_resolver subnet delegation should include Microsoft.Network/virtualNetworks/subnets/join/action"
+    condition     = contains(module.network.subnets["aks_api"].delegation[0].service_delegation[0].actions, "Microsoft.Network/virtualNetworks/subnets/join/action")
+    error_message = "aks_api subnet delegation should include Microsoft.Network/virtualNetworks/subnets/join/action"
   }
 }
 

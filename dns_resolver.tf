@@ -10,7 +10,7 @@ resource "azurerm_subnet" "dns_resolver" {
     service_delegation {
       name = "Microsoft.Network/dnsResolvers"
       actions = [
-        "Microsoft.Network/virtualNetworks/subnets/action"
+        "Microsoft.Network/virtualNetworks/subnets/join/action"
       ]
     }
   }
