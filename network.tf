@@ -22,7 +22,7 @@ resource "azurerm_subnet" "subnets" {
       service_delegation {
         name = "Microsoft.ContainerService/managedClusters"
         actions = [
-          "Microsoft.Network/virtualNetworks/subnets/action"
+          "Microsoft.Network/virtualNetworks/subnets/join/action"
         ]
       }
     }
