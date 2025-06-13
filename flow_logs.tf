@@ -55,25 +55,16 @@ resource "null_resource" "dcr_cleanup" {
     is_windows = substr(pathexpand("~"), 0, 1) == "/" ? false : true
   }
 
-  # Make sure the bash script is executable on Unix/Linux systems
-  provisioner "local-exec" {
-    command     = self.triggers.is_windows ? "echo 'Windows detected, skipping chmod'" : "chmod +x ${path.module}/dcr_cleanup.sh"
-    interpreter = self.triggers.is_windows ? ["PowerShell", "-Command"] : ["bash", "-c"]
-  }
-
   # Only run during destroy operations
   provisioner "local-exec" {
     when = destroy
-    # Choose appropriate script and interpreter based on OS
-    # For Windows systems, use PowerShell
-    # For Linux/Unix systems, use Bash
+    # Use interpreter explicitly to avoid permission issues in TFC/remote
     command = self.triggers.is_windows ? (
-      "PowerShell -ExecutionPolicy Bypass -File ${path.module}/dcr_cleanup.ps1 -ResourceGroup ${self.triggers.module_rg} -SubscriptionId ${self.triggers.subscription_id} -NamePattern NWTA"
+      "pwsh -File ${path.module}/dcr_cleanup.ps1 -ResourceGroup ${self.triggers.module_rg} -SubscriptionId ${self.triggers.subscription_id} -NamePattern NWTA"
       ) : (
-      "${path.module}/dcr_cleanup.sh ${self.triggers.module_rg} ${self.triggers.subscription_id} NWTA"
+      "bash ${path.module}/dcr_cleanup.sh ${self.triggers.module_rg} ${self.triggers.subscription_id} NWTA"
     )
-    # The interpreter has no effect on Windows when using PowerShell
-    interpreter = self.triggers.is_windows ? ["PowerShell", "-Command"] : ["bash", "-c"]
+    # The interpreter argument is not needed when calling the interpreter directly
   }
 
   depends_on = [azurerm_network_watcher_flow_log.vnet_flow_logs]
