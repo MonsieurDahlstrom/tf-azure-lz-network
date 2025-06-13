@@ -1,3 +1,10 @@
+## [1.3.3](https://github.com/MonsieurDahlstrom/tf-azure-lz-network/compare/v1.3.2...v1.3.3) (2025-06-13)
+
+
+### Bug Fixes
+
+* delegation of api server subnet ([2eecfcf](https://github.com/MonsieurDahlstrom/tf-azure-lz-network/commit/2eecfcfc169a1bf9427bbc6ac99a4cf459f87965))
+
 ## [1.3.2](https://github.com/MonsieurDahlstrom/tf-azure-lz-network/compare/v1.3.1...v1.3.2) (2025-06-12)
 
 
